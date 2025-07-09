@@ -51,7 +51,6 @@ int main(int argc, char const *argv[]) {
 
         // to ensure that all ip addresses are IPV4 and their dot decimal notation is valid
         std::ranges::for_each(ip_pool, [](auto &ip) {
-            std::cout << ip.size() << std::endl;
             assert(ip.size() == IPV4_DOT_DECIMAL_NUMBER_CONSTANT);
             std::ranges::for_each(ip, [](auto &el) {
                 assert(el.size() <= IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT);
