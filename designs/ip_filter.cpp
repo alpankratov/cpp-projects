@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -5,6 +6,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
+// IPV4 addresses can have 4 3-digit decimals only with each decimal max to be 255 (4 byte)
+// https://en.wikipedia.org/wiki/Dot-decimal_notation
+static int IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT = 3;
+static int IPV4_DOT_DECIMAL_NUMBER_CONSTANT = 4;
+static int IPV4_DOT_DECIMAL_MAX = 255;
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -42,7 +49,27 @@ int main(int argc, char const *argv[]) {
             ip_pool.push_back(split(v.at(0), '.'));
         }
 
-        // TODO reverse lexicographically sort
+        // to ensure that all ip addresses are IPV4 and their dot decimal notation is valid
+        std::ranges::for_each(ip_pool, [](auto &ip) {
+            std::cout << ip.size() << std::endl;
+            assert(ip.size() == IPV4_DOT_DECIMAL_NUMBER_CONSTANT);
+            std::ranges::for_each(ip, [](auto &el) {
+                assert(el.size() <= IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT);
+                assert(std::stoi(el) <= IPV4_DOT_DECIMAL_MAX);
+            });
+        });
+
+        std::ranges::sort(ip_pool, [](const auto &a, const auto &b) {
+            std::string result_a;
+            std::string result_b;
+            for (const auto &a_el: a) {
+                result_a += std::string(IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT - std::size(a_el), '0') + a_el + ".";
+            }
+            for (const auto &b_el: b) {
+                result_b += std::string(IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT - std::size(b_el), '0') + b_el + ".";
+            }
+            return (result_a > result_b);
+        });
 
         for (auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip) {
             for (auto ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part) {
