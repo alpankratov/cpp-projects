@@ -1,6 +1,8 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -34,10 +36,13 @@ int main(int argc, char const *argv[])
     try
     {
         std::vector<std::vector<std::string> > ip_pool;
+        std::ifstream all_ip_addresses("../designs/ip_filter.tsv");
+        if (!all_ip_addresses.is_open()) {
+            std::cerr << "Could not open ip_filter file" << std::endl;
+        }
 
-        for(std::string line; std::getline(std::cin, line);)
-        {
-            std::vector<std::string> v = split(line, '\t');
+        for (std::string line; std::getline(all_ip_addresses, line);) {
+            auto v = split(line, '\t');
             ip_pool.push_back(split(v.at(0), '.'));
         }
 
@@ -50,7 +55,6 @@ int main(int argc, char const *argv[])
                 if (ip_part != ip->cbegin())
                 {
                     std::cout << ".";
-
                 }
                 std::cout << *ip_part;
             }
