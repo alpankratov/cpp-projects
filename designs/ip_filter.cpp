@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-// IPV4 addresses can have 4 3-digit decimals only with each decimal max to be 255 (4 byte)
+// IPV4 addresses can have 4 3-digit decimals only with each decimal max to be 255 (1 byte each)
 // https://en.wikipedia.org/wiki/Dot-decimal_notation
 static int IPV4_DOT_DECIMAL_DIGIT_SIZE_LIMIT = 3;
 static int IPV4_DOT_DECIMAL_NUMBER_CONSTANT = 4;
@@ -102,6 +102,7 @@ int main(int argc, char const *argv[]) {
             });
         });
 
+        // transforming ip vector [123.4.56.7] into string '123.004.056.007' and compare strings
         std::ranges::sort(ip_pool, [](const auto &a, const auto &b) {
             std::string result_a;
             std::string result_b;
