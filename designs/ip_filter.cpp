@@ -70,12 +70,12 @@ int main(int argc, char const *argv[]) {
             return (result_a > result_b);
         });
 
-        for (auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip) {
-            for (auto ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part) {
-                if (ip_part != ip->cbegin()) {
+        for (const auto &ip: ip_pool) {
+            for (const auto &ip_part: ip) {
+                if (ip_part != ip[0]) {
                     std::cout << ".";
                 }
-                std::cout << *ip_part;
+                std::cout << ip_part;
             }
             std::cout << std::endl;
         }
