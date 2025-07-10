@@ -22,6 +22,7 @@ jobs:
       - run: cmake --build .
       - run: cmake --build . --target test
       - run: cmake --build . --target package
+      - run: mkdir ./cpp-projects-0.0.${{ github.run_number }}-Linux.deb
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
