@@ -36,6 +36,18 @@ std::vector<std::string> split(const std::string &str, const char d) {
     return r;
 }
 
+void print_ipv4_vectors(const std::vector<std::vector<std::string> > &ip_pool) {
+    for (const auto &ip: ip_pool) {
+        for (const auto &ip_part: ip) {
+            if (ip_part != ip[0]) {
+                std::cout << ".";
+            }
+            std::cout << ip_part;
+        }
+        std::cout << std::endl;
+    }
+}
+
 int main(int argc, char const *argv[]) {
     try {
         std::vector<std::vector<std::string> > ip_pool;
@@ -70,15 +82,7 @@ int main(int argc, char const *argv[]) {
             return (result_a > result_b);
         });
 
-        for (const auto &ip: ip_pool) {
-            for (const auto &ip_part: ip) {
-                if (ip_part != ip[0]) {
-                    std::cout << ".";
-                }
-                std::cout << ip_part;
-            }
-            std::cout << std::endl;
-        }
+        print_ipv4_vectors(ip_pool);
 
         // 222.173.235.246
         // 222.130.177.64
