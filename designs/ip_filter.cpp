@@ -38,11 +38,11 @@ std::vector<std::string> split(const std::string &str, const char d) {
 
 void print_ipv4_vectors(const std::vector<std::vector<std::string> > &ip_pool) {
     for (const auto &ip: ip_pool) {
-        for (const auto &ip_part: ip) {
-            if (ip_part != ip[0]) {
+        for (size_t i = 0; i < ip.size(); ++i) {
+            if (i > 0) {
                 std::cout << ".";
             }
-            std::cout << ip_part;
+            std::cout << ip[i];
         }
         std::cout << std::endl;
     }
