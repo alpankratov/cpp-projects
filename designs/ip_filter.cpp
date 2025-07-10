@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <cassert>
-#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -47,6 +47,38 @@ void print_ipv4_vectors(const std::vector<std::vector<std::string> > &ip_pool) {
         std::cout << std::endl;
     }
 }
+
+auto filter(const std::vector<std::vector<std::string> > &ip_pool, const int first_byte) {
+    std::vector<std::vector<std::string> > ip_output;
+    for (auto ip: ip_pool) {
+        if (std::stoi(ip[0]) == first_byte) {
+            ip_output.push_back(ip);
+        }
+    }
+    return ip_output;
+};
+
+
+auto filter(const std::vector<std::vector<std::string> > &ip_pool, const int first_byte, const int second_byte) {
+    std::vector<std::vector<std::string> > ip_output;
+    for (auto ip: ip_pool) {
+        if (std::stoi(ip[0]) == first_byte && std::stoi(ip[1]) == second_byte) {
+            ip_output.push_back(ip);
+        }
+    }
+    return ip_output;
+};
+
+auto filter_any(const std::vector<std::vector<std::string> > &ip_pool, const int byte) {
+    std::vector<std::vector<std::string> > ip_output;
+    for (auto ip: ip_pool) {
+        if (std::stoi(ip[0]) == byte || std::stoi(ip[1]) == byte || std::stoi(ip[2]) == byte || std::stoi(ip[3]) ==
+            byte) {
+            ip_output.push_back(ip);
+        }
+    }
+    return ip_output;
+};
 
 int main(int argc, char const *argv[]) {
     try {
@@ -92,8 +124,8 @@ int main(int argc, char const *argv[]) {
         // 1.29.168.152
         // 1.1.234.8
 
-        // TODO filter by first byte and output
-        // ip = filter(1)
+        auto ip_filtered_first_byte = filter(ip_pool, 1);
+        print_ipv4_vectors(ip_filtered_first_byte);
 
         // 1.231.69.33
         // 1.87.203.225
@@ -101,16 +133,16 @@ int main(int argc, char const *argv[]) {
         // 1.29.168.152
         // 1.1.234.8
 
-        // TODO filter by first and second bytes and output
-        // ip = filter(46, 70)
+        auto ip_filtered_first_second_byte = filter(ip_pool, 46, 70);
+        print_ipv4_vectors(ip_filtered_first_second_byte);
 
         // 46.70.225.39
         // 46.70.147.26
         // 46.70.113.73
         // 46.70.29.76
 
-        // TODO filter by any byte and output
-        // ip = filter_any(46)
+        auto ip_filtered_any_byte = filter_any(ip_pool, 46);
+        print_ipv4_vectors(ip_filtered_any_byte);
 
         // 186.204.34.46
         // 186.46.222.194
