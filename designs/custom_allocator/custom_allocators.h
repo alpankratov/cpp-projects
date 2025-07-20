@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <iostream>
+#include <sstream>
 
 namespace custom_allocators {
     template<typename T>
@@ -23,7 +24,13 @@ namespace custom_allocators {
                             "therefore " << max_n_elements_ << " are being set\n";
                 }
                 if (n_elements_ > max_n_elements_) {
-                    throw std::runtime_error("Too many elements");
+                    std::ostringstream oss;
+                    oss << "Too many elements requested: "
+                        << n_elements_
+                        << " (max allowed "
+                        << max_n_elements_
+                        << ")";
+                    throw std::runtime_error(oss.str());
                 }
                 std::cout << "Initializing memory pool for "
                         << n_elements_ << " elements " << sizeof(T) << " bytes each\n";
@@ -40,6 +47,7 @@ namespace custom_allocators {
 
         // we allow constructing this allocator only for a specific number of elements in a container
         CustomAllocator() = delete;
+
         explicit CustomAllocator(const uint n_elements) : n_elements_(n_elements) {
         };
 
@@ -76,7 +84,7 @@ namespace custom_allocators {
 
         void deallocate(T *p, std::size_t n) noexcept {
             std::size_t bytes = n * sizeof(T);
-            auto cp = reinterpret_cast<char*>(p);
+            auto cp = reinterpret_cast<char *>(p);
 
             // If pointer lies within our pool range, simply ignore (bump allocator)
             if (pool_ && cp >= pool_ && cp < pool_ + pool_size_) {
