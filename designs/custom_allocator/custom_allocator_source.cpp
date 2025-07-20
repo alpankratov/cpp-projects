@@ -19,7 +19,7 @@ int main() {
         factorial_dict[i] = get_factorial_of_n(i);
     };
     for (auto &el: factorial_dict) {
-        std::cout << el.first << ": " << el.second << '\n';
+        std::cout << el.first << " " << el.second << '\n';
     }
     std::cout << "Finish factorial map without allocator\n\n\n";
 
@@ -31,7 +31,7 @@ int main() {
         factorial_dict_allocator[i] = get_factorial_of_n(i);
     };
     for (auto &el: factorial_dict_allocator) {
-        std::cout << el.first << ": " << el.second << '\n';
+        std::cout << el.first << " " << el.second << '\n';
     }
     std::cout << "By element deallocation check\n";
     factorial_dict_allocator.erase(2);  // should be deallocated from pool
