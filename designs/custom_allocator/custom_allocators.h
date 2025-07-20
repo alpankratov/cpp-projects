@@ -7,10 +7,10 @@ namespace custom_allocators {
     class CustomAllocator {
     private:
         // Our memory pool - pre-allocated chunk
-        char *pool_;
-        size_t pool_size_;
-        char *next_free_; // Points to next available memory
-        uint n_elements_;
+        char *pool_{};
+        size_t pool_size_{};
+        char *next_free_{}; // Points to next available memory
+        uint n_elements_{};
 
         uint max_n_elements_ = 10;
 

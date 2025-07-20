@@ -13,7 +13,6 @@ int get_factorial_of_n(int n) {
 }
 
 int main() {
-    // tell the allocator we plan ~10 elements
     using Alloc = custom_allocators::CustomAllocator<std::pair<const int,int>>;
     std::map<int,int,std::less<>,Alloc> factorial_dict(std::less<>{}, Alloc(7));
 
