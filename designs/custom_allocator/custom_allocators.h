@@ -38,35 +38,61 @@ namespace custom_allocators {
     public:
         using value_type = T;
 
-        CustomAllocator() = default;
-
-        explicit CustomAllocator(const uint n_elements) : pool_(nullptr), pool_size_(0), next_free_(nullptr),
-                                                          n_elements_(n_elements) {
-            init_pool();
+        // we allow constructing this allocator only for a specific number of elements in a container
+        CustomAllocator() = delete;
+        explicit CustomAllocator(const uint n_elements) : n_elements_(n_elements) {
         };
 
-        template<typename U>
-        constexpr CustomAllocator(const CustomAllocator<U> &) noexcept {
+        auto get_n_elements() const {
+            return n_elements_;
         }
 
+        // to “rebind” allocator to other types (e.g., when std::map key-value pair is assigned)
+        template<typename U>
+        constexpr explicit CustomAllocator(const CustomAllocator<U> &other) noexcept {
+            n_elements_ = other.get_n_elements();
+        }
+
+
         T *allocate(std::size_t n) {
-            std::cout << "[Allocate] " << n << " x " << sizeof(T) << " bytes\n";
-            return static_cast<T *>(::operator new(n * sizeof(T)));
+            init_pool();
+            size_t bytes_needed = n * sizeof(T);
+            std::cout << "Trying to allocate " << n << " x " << sizeof(T) << " bytes\n";
+
+            // Check if we have enough space in our pool
+            if (next_free_ + bytes_needed > pool_ + pool_size_) {
+                std::cout << "Pool exhausted! Falling back to malloc\n";
+                return static_cast<T *>(std::malloc(bytes_needed));
+            }
+
+            // Give memory from our pool
+            T *result = reinterpret_cast<T *>(next_free_);
+            next_free_ += bytes_needed;
+
+            std::cout << "Allocated " << bytes_needed << " bytes from pool\n";
+            std::cout << "Pool usage: " << (next_free_ - pool_) << "/" << pool_size_ << " bytes\n";
+            return result;
         }
 
         void deallocate(T *p, std::size_t n) noexcept {
-            std::cout << "[Deallocate] " << n << " x " << sizeof(T) << " bytes\n";
+            std::cout << "Deallocating element of " << sizeof(T) << " bytes\n";
             ::operator delete(p);
         }
 
-        template<typename U, typename... Args>
-        void construct(U *p, Args &&... args) {
-            new(p) U(std::forward<Args>(args)...);
+        // Reset entire pool (custom function)
+        void reset_pool() {
+            if (pool_) {
+                next_free_ = pool_;
+                std::cout << "Pool reset - all memory available again\n";
+            }
         }
 
-        template<typename U>
-        void destroy(U *p) {
-            p->~U();
+        void cleanup() {
+            if (pool_) {
+                std::free(pool_);
+                pool_ = nullptr;
+                std::cout << "Pool destroyed\n";
+            }
         }
     };
 }
