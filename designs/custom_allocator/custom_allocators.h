@@ -75,8 +75,19 @@ namespace custom_allocators {
         }
 
         void deallocate(T *p, std::size_t n) noexcept {
-            std::cout << "Deallocating element of " << sizeof(T) << " bytes\n";
-            ::operator delete(p);
+            std::size_t bytes = n * sizeof(T);
+            auto cp = reinterpret_cast<char*>(p);
+
+            // If pointer lies within our pool range, simply ignore (bump allocator)
+            if (pool_ && cp >= pool_ && cp < pool_ + pool_size_) {
+                std::cout << "Deallocated " << bytes << " bytes back to pool\n";
+                next_free_ -= bytes;
+                std::cout << "Pool usage: " << (next_free_ - pool_) << "/" << pool_size_ << " bytes\n";
+            } else {
+                // Otherwise it was malloc'd as a fallback
+                std::cout << "Deallocated " << bytes << " bytes from fallback malloc\n";
+                std::free(p);
+            }
         }
 
         // Reset entire pool (custom function)
