@@ -83,7 +83,7 @@ auto filter_any(const std::vector<std::vector<std::string> > &ip_pool, const int
 int main(int argc, char const *argv[]) {
     try {
         std::vector<std::vector<std::string> > ip_pool;
-        std::ifstream all_ip_addresses("../designs/ip_filter.tsv");
+        std::ifstream all_ip_addresses("../designs/ip_filter/ip_filter.tsv");
         if (!all_ip_addresses.is_open()) {
             std::cerr << "Could not open ip_filter file" << std::endl;
         }
