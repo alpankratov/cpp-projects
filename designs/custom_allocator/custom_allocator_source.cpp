@@ -16,7 +16,7 @@ int get_factorial_of_n(int n) {
 }
 
 int main() {
-    std::cout << "\n\n\nCreating factorial map without allocator\n";
+    std::cout << "\n\n\n1). Creating factorial map without allocator\n";
     std::map<int, int> factorial_dict{};
     for (int i = 0; i < 10; ++i) {
         factorial_dict[i] = get_factorial_of_n(i);
@@ -26,7 +26,7 @@ int main() {
     }
     std::cout << "Finish factorial map without allocator\n\n\n";
 
-    std::cout << "\n\n\nCreating factorial map with Custom Allocator\n";
+    std::cout << "\n\n\n2). Creating factorial map with Custom Allocator\n";
     using customAllocator = custom_allocators::CustomAllocator<std::pair<const int, int> >;
     const auto alloc_map = customAllocator{7};
     std::map<int, int, std::less<>, customAllocator> factorial_dict_allocator{alloc_map};
@@ -42,9 +42,21 @@ int main() {
     std::cout << "By element deallocation check complete\n";
     std::cout << "Finish factorial map with Custom Allocator\n\n\n";
 
+    std::cout << "\n\n\n3). Creating Custom Vector without allocator\n";
+    custom_containers::CustomVector<int> vec_no_allocator{10};
 
-    std::cout << "\n\n\nCreating Custom Vector with Custom Allocator\n";
-    custom_containers::CustomVector<int> vec_custom_allocator;
+    for (int i = 0; i < 10; ++i) {
+        vec_no_allocator.push_back(i);
+        std::cout << "vec[" << i << "] = " << vec_no_allocator[i] << "\n";
+    }
+    std::cout << "Finish Custom Vector without allocator\n\n\n";
+
+    std::cout << "\n\n\n4). Creating Custom Vector with Custom Allocator\n";
+    constexpr uint vector_capacity = 10;
+    const auto custom_allocator_vector = custom_allocators::CustomAllocator<int>(vector_capacity);
+    custom_containers::CustomVector<int, custom_allocators::CustomAllocator<int> > vec_custom_allocator{
+        10, custom_allocator_vector
+    };
 
     for (int i = 0; i < 10; ++i) {
         vec_custom_allocator.push_back(i);

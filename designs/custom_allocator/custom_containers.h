@@ -2,7 +2,7 @@
 #include "custom_allocators.h"
 
 namespace custom_containers {
-    template<typename T, typename Allocator = custom_allocators::CustomAllocator<T> >
+    template<typename T, typename Allocator = std::allocator<T> >
     class CustomVector {
     private:
         std::size_t capacity_;
@@ -11,19 +11,15 @@ namespace custom_containers {
         std::size_t size_;
 
     public:
-        CustomVector() : allocator_{10},
-                         capacity_{10},
-                         data_{allocator_.allocate(static_cast<uint>(capacity_))},
-                         size_{0} {
-            std::cout << "Custom Vector initialized with no parameter - default capacity of 10 is used\n";
-        }
-
-        // Construct vector with an initial capacity:
-        explicit CustomVector(const std::size_t capacity)
-            : allocator_{static_cast<uint>(capacity)},
-              data_{allocator_.allocate(static_cast<uint>(capacity))},
-              size_{0},
-              capacity_{capacity} {
+        explicit CustomVector(
+            std::size_t capacity = 10,
+            const Allocator &alloc = Allocator()
+        )
+            : allocator_{alloc},
+              capacity_{capacity},
+              data_{allocator_.allocate(capacity_)},
+              size_{0} {
+            std::cout << "CustomVector initialized (capacity=" << capacity_ << ")\n";
         }
 
 
