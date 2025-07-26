@@ -19,6 +19,7 @@ concept ip_string = std::same_as<T, std::string>;
 
 
 // Perhaps a better alternative to consider - container is everything that has size(), begin() and end()
+// however, string fall into this category - so above concept is preferred
 // template<typename T>
 // concept container = requires(T c) {
 //     { c.size() } -> std::convertible_to<std::size_t>;
@@ -58,7 +59,7 @@ auto print_ip(T ip) {
 }
 
 template<typename T, typename... Ts>
-    requires (std::same_as<T, Ts> && ...)
+    requires (std::same_as<T, Ts> && ...)  // ensures every `Ts` is the same type as `T`
 auto print_ip(const std::tuple<T, Ts...> &ip) {
     // collect all elements into a vector<T>
     std::vector<T> out;
@@ -79,5 +80,6 @@ int main() {
     // print_ip( "Hello, World!" ); // No implementation for const char* - so won't compile
     print_ip(std::vector<int>{100, 200, 300, 400}); // 100.200.300.400
     print_ip(std::list<int>{400, 300, 200, 100}); // 400.300.200.100
-    print_ip(std::make_tuple(123, 456, 789, 0)); // 123.456.789.0 - not implemented yet
+    print_ip(std::make_tuple(123, 456, 789, 0)); // 123.456.789.0
+    // print_ip(std::make_tuple(123, 456, 789, "0")); // elements are not of the same type - won't compile
 }
