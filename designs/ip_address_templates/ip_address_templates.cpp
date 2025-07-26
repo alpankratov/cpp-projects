@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <cstdint>
@@ -36,7 +37,7 @@ void print_ip(T ip) {
         if (i > 0) {
             std::cout << ".";
         }
-        auto it = std::next(ip.begin(), i);  // advance begin() by i steps
+        auto it = std::next(ip.begin(), i); // advance begin() by i steps
         std::cout << *it;
         // std::cout << ip.at(i);  // no [] and at() overloads for list so falling back to iterator pointer
     }
@@ -56,6 +57,18 @@ auto print_ip(T ip) {
     print_ip(out); // use template for containers here
 }
 
+template<typename T, typename... Ts>
+    requires (std::same_as<T, Ts> && ...)
+auto print_ip(const std::tuple<T, Ts...> &ip) {
+    // collect all elements into a vector<T>
+    std::vector<T> out;
+    out.reserve(sizeof...(Ts) + 1);
+    std::apply([&](auto &&... args) {
+        (out.push_back(args), ...);
+    }, ip);
+    print_ip(out); // use template for containers here
+}
+
 
 int main() {
     print_ip(int8_t{-1});
@@ -66,5 +79,5 @@ int main() {
     // print_ip( "Hello, World!" ); // No implementation for const char* - so won't compile
     print_ip(std::vector<int>{100, 200, 300, 400}); // 100.200.300.400
     print_ip(std::list<int>{400, 300, 200, 100}); // 400.300.200.100
-    // print_ip( std::make_tuple(123, 456, 789, 0) ); // 123.456.789.0 - not implemented yet
+    print_ip(std::make_tuple(123, 456, 789, 0)); // 123.456.789.0 - not implemented yet
 }
