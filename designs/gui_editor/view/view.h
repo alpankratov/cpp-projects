@@ -20,7 +20,7 @@ namespace view {
     public:
         void refresh(const Document &doc) override {
             const auto doc_map = doc.parse_into_map();
-            std::cout << "[View] Document has " << doc_map.size() << " shapes:\n";
+            std::cout << "[View] Refreshing view... Document now has " << doc_map.size() << " shapes:\n";
             for (const auto &[shape_id, shape]: doc.parse_into_map()) {
                 shape->explain();
             }

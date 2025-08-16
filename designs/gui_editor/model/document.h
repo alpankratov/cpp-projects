@@ -2,7 +2,7 @@
 #include <vector>
 #include <optional>
 #include <algorithm>
-#include <iostream>
+// #include <iostream>
 #include <memory>
 #include <unordered_map>
 
@@ -19,14 +19,11 @@ namespace document {
 
         ShapeId add_shape(ShapePtr s) {
             const auto id = ids_.next();
-            std::cout << "\n---------------- Adding a new shape of type: " << s->type() << " with id " <<
-                    id.value << "----------------\n";
             shapes_.push_back({id, std::move(s)});
             return id;
         }
 
-        bool remove_shape(ShapeId id) {
-            std::cout << "\n---------------- Removing shape id: " << id.value << " ----------------\n";
+        bool remove_shape(const ShapeId id) {
             const auto it = std::ranges::remove_if(shapes_,
                                                    [&](const Entry &e) { return e.id == id; }).begin();
             const bool removed = (it != shapes_.end());
@@ -35,7 +32,6 @@ namespace document {
         }
 
         [[nodiscard]] std::optional<ShapePtr> find(const ShapeId id) const {
-            std::cout << "\n---------------- Looking for shape id:" << id.value << " ----------------\n";
             for (const auto &[shape_id, shape]: shapes_) if (shape_id == id) return shape;
             return std::nullopt;
         }
@@ -50,7 +46,6 @@ namespace document {
         }
 
         void clear() {
-            std::cout << "\n---------------- Clearing document ----------------\n";
             shapes_.clear();
         }
 

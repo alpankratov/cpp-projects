@@ -1,6 +1,5 @@
 /*
-* Polymorphic strategy for import/export. In a real project, you'd implement
- * JSON/SVG/Custom; here we stub with minimal behavior to prove call paths.
+* Polymorphic strategy for import/export of files. Only the dummy case is implemented for demo purposes
  */
 #pragma once
 #include "../model/document.h"
