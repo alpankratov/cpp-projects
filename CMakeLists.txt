@@ -13,8 +13,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(cpp_projects main.cpp)
 add_library(cpp_projects_lib lib.cpp)
-add_executable(ip_filtering designs/ip_filter/ip_filter.cpp)
-add_executable(print_ip designs/ip_address_templates/print_ip.cpp)
+# add_executable(ip_filtering designs/ip_filter/ip_filter.cpp)
+# add_executable(print_ip designs/ip_address_templates/print_ip.cpp)
+add_executable(custom_allocator designs/custom_allocator/custom_allocator_source.cpp)
 
 target_include_directories(cpp_projects_lib
         PRIVATE "${CMAKE_BINARY_DIR}"
