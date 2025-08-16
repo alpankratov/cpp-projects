@@ -3,13 +3,12 @@
  * Here we keep it simple and deterministic for the demo.
  */
 #pragma once
-#include <cstdint>
 
 namespace shape_id {
     struct ShapeId {
         std::uint64_t value{};
-        friend bool operator==(ShapeId a, ShapeId b) noexcept { return a.value == b.value; }
-        friend bool operator!=(ShapeId a, ShapeId b) noexcept { return !(a == b); }
+        friend bool operator==(const ShapeId a, const ShapeId b) noexcept { return a.value == b.value; }
+        friend bool operator!=(const ShapeId a, const ShapeId b) noexcept { return !(a == b); }
     };
 
     class IdGenerator {

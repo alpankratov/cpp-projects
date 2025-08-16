@@ -31,29 +31,29 @@ namespace controller {
 
         // --------------------------- Application-level actions --------------------
 
-        void new_document() {
+        void new_document() const {
             doc_->clear();
             notify_view();
         }
 
-        bool import_document(const std::string &file) {
+        [[nodiscard]] bool import_document(const std::string &file) const {
             const bool ok = serializer_->import_from_file(*doc_, file, *factory_);
             notify_view();
             return ok;
         }
 
-        bool export_document(const std::string &file) {
+        [[nodiscard]] bool export_document(const std::string &file) const {
             return serializer_->export_to_file(*doc_, file);
         }
 
-        ShapeId create_primitive(std::string type) {
+        [[nodiscard]] ShapeId create_primitive(const std::string &type) const {
             auto shape = factory_->create(type);
             const auto id = doc_->add_shape(std::move(shape));
             notify_view();
             return id;
         }
 
-        bool delete_primitive(ShapeId id) {
+        [[nodiscard]] bool delete_primitive(const ShapeId id) const {
             const bool ok = doc_->remove_shape(id);
             notify_view();
             return ok;
@@ -63,7 +63,7 @@ namespace controller {
         void set_serializer(std::unique_ptr<ISerializer> s) { serializer_ = std::move(s); }
 
     private:
-        void notify_view() { if (view_) view_->refresh(*doc_); }
+        void notify_view() const { if (view_) view_->refresh(*doc_); }
 
         std::shared_ptr<Document> doc_;
         std::shared_ptr<IView> view_;

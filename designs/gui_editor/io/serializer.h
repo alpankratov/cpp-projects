@@ -37,7 +37,7 @@ namespace serializer {
             // Mock: Pretend we read one rectangle from disk.
             (void) path;
             doc.clear();
-            auto rect = std::make_shared<Rectangle>(Point{10, 10}, 50, 40);
+            const auto rect = std::make_shared<Rectangle>(Point{10, 10}, 50, 40);
             doc.add_shape(rect);
             std::cout << "[DummySerializer] Imported document from " << path << "\n";
             return true;

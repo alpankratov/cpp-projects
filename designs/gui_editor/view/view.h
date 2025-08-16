@@ -20,11 +20,8 @@ namespace view {
     public:
         void refresh(const Document &doc) override {
             std::cout << "[View] Document has " << doc.list().size() << " shapes:\n";
-            int idx = 0;
-            for (auto &s: doc.list()) {
-                const auto b = s->bounds();
-                std::cout << "  #" << idx++ << " " << s->type()
-                        << " bounds=(" << b.x << "," << b.y << "," << b.w << "," << b.h << ")\n";
+            for (const auto &s: doc.list()) {
+                s->explain();
             }
         }
     };

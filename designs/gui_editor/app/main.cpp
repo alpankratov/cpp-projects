@@ -19,36 +19,36 @@ using namespace controller;
 using namespace serializer;
 
 // Handler: File → New
-void on_new_document(EditorController& ctl) {
+void on_new_document(const EditorController &ctl) {
     ctl.new_document();
 }
 
 // Handler: File → Import...
-void on_import(EditorController& ctl, const std::string& path) {
+void on_import(const EditorController &ctl, const std::string &path) {
     if (!ctl.import_document(path)) {
         std::cerr << "Import failed for: " << path << "\n";
     }
 }
 
 // Handler: File → Export...
-void on_export(EditorController& ctl, const std::string& path) {
+void on_export(const EditorController &ctl, const std::string &path) {
     if (!ctl.export_document(path)) {
         std::cerr << "Export failed for: " << path << "\n";
     }
 }
 
 // Handler: Insert → Shape
-ShapeId on_create_shape(EditorController& ctl, const std::string& type) {
+ShapeId on_create_shape(const EditorController &ctl, const std::string &type) {
     try {
         return ctl.create_primitive(type);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cerr << "Create shape failed: " << e.what() << "\n";
         return ShapeId{0};
     }
 }
 
 // Handler: Edit → Delete
-void on_delete_shape(EditorController& ctl, ShapeId id) {
+void on_delete_shape(const EditorController &ctl, const ShapeId id) {
     if (!ctl.delete_primitive(id)) {
         std::cerr << "Delete shape failed: id=" << id.value << "\n";
     }
@@ -61,25 +61,25 @@ void on_delete_shape(EditorController& ctl, ShapeId id) {
  */
 int main() {
     // 1) Build Model, View, Controller objects.
-    auto doc      = std::make_shared<Document>();
-    auto view     = std::make_shared<ConsoleView>();
-    auto factory  = std::make_shared<ShapeFactory>();
-    auto io       = std::make_unique<DummySerializer>();
+    const auto doc = std::make_shared<Document>();
+    const auto view = std::make_shared<ConsoleView>();
+    const auto factory = std::make_shared<ShapeFactory>();
+    auto io = std::make_unique<DummySerializer>();
 
     // 2) Register available shape creators in the factory (extensible).
-    factory->register_type("Line", []{
-        return std::make_shared<Line>(Point{0,0}, Point{100,100});
+    factory->register_type("Line", [] {
+        return std::make_shared<Line>(Point{0, 0}, Point{100, 100});
     });
-    factory->register_type("Rectangle", []{
-        return std::make_shared<Rectangle>(Point{10,10}, 50, 30);
+    factory->register_type("Rectangle", [] {
+        return std::make_shared<Rectangle>(Point{10, 10}, 50, 30);
     });
-    factory->register_type("Circle", []{
-        return std::make_shared<Circle>(Point{40,40}, 20.0);
+    factory->register_type("Circle", [] {
+        return std::make_shared<Circle>(Point{40, 40}, 20.0);
     });
 
 
     // 3) Create the Controller (C in MVC).
-    EditorController controller{doc, view, std::move(io), factory};
+    const EditorController controller{doc, view, std::move(io), factory};
 
     // ---- Simulated GUI Session (Handlers are the "GUI callbacks") ----
 
@@ -94,9 +94,6 @@ int main() {
 
     // Insert → Circle
     auto lId = on_create_shape(controller, "Line");
-
-    // Insert → Circle
-    auto l2Id = on_create_shape(controller, "Line");
 
     // File → Export...
     on_export(controller, "scene.mock");

@@ -16,35 +16,33 @@ namespace document {
         using ShapePtr = std::shared_ptr<IShape>;
 
         ShapeId add_shape(ShapePtr s) {
-            auto id = ids_.next();
-            std::cout << "\n---------------- Removing new shape of type: " << s->type() << " with id " <<
-                                id.value << "----------------\n";
+            const auto id = ids_.next();
+            std::cout << "\n---------------- Adding a new shape of type: " << s->type() << " with id " <<
+                    id.value << "----------------\n";
             shapes_.push_back({id, std::move(s)});
             return id;
         }
 
         bool remove_shape(ShapeId id) {
             std::cout << "\n---------------- Removing shape id: " << id.value << " ----------------\n";
-            auto it = std::remove_if(shapes_.begin(), shapes_.end(),
-                                     [&](const Entry &e) { return e.id == id; });
+            const auto it = std::ranges::remove_if(shapes_,
+                                                   [&](const Entry &e) { return e.id == id; }).begin();
             const bool removed = (it != shapes_.end());
             shapes_.erase(it, shapes_.end());
             return removed;
         }
 
-        std::optional<ShapePtr> find(ShapeId id) const {
+        [[nodiscard]] std::optional<ShapePtr> find(const ShapeId id) const {
             std::cout << "\n---------------- Looking for shape id:" << id.value << " ----------------\n";
-            for (auto &e: shapes_) if (e.id == id) return e.shape;
+            for (const auto &[shape_id, shape]: shapes_) if (shape_id == id) return shape;
             return std::nullopt;
         }
 
-        const std::vector<ShapePtr> list() const {
-            std::cout << "\n---------------- Listing shapes ----------------\n";
+        [[nodiscard]] std::vector<ShapePtr> list() const {
             std::vector<ShapePtr> out;
             out.reserve(shapes_.size());
-            for (auto &e: shapes_) {
-                e.shape->explain();
-                out.push_back(e.shape);
+            for (const auto &[shape_id, shape]: shapes_) {
+                out.push_back(shape);
             };
             return out;
         }
