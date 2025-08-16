@@ -78,7 +78,7 @@ int main() {
     });
 
 
-    // 3) Create the Controller (C in MVC).
+    // 3) Create the Controller.
     const EditorController controller{doc, view, std::move(io), factory};
 
     // ---- Simulated GUI Session (Handlers are the "GUI callbacks") ----
@@ -107,7 +107,5 @@ int main() {
 
     // Final export to show resulting state
     export_file(controller, "scene_final.mock");
-
-    // Program ends; destructors release resources via smart pointers.
     return 0;
 }
