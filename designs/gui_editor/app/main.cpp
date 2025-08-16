@@ -76,6 +76,9 @@ int main() {
     factory->register_type("Circle", [] {
         return std::make_shared<Circle>(Point{40, 40}, 20.0);
     });
+    factory->register_type("Huge Circle", [] {
+        return std::make_shared<Circle>(Point{0, 0}, 20000.0);
+    });
 
 
     // 3) Create the Controller.
@@ -91,6 +94,7 @@ int main() {
 
     // Insert → Circle
     create_shape(controller, "Circle");
+    create_shape(controller, "Huge Circle");
 
     // File → Export...
     export_file(controller, "scene.mock");
