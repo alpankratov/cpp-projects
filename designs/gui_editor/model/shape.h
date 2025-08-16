@@ -43,7 +43,7 @@ namespace shape {
         [[nodiscard]] std::string_view type() const noexcept override { return "Circle"; }
 
         void explain() const noexcept override {
-            std::cout << "Circle with center at (" << c_.x << "," << c_.y << ") and radius of " << r_ << "\n";
+            std::cout << "Circle with center at (" << c_.x << "," << c_.y << ") and radius " << r_ << "\n";
         }
 
     private:
@@ -61,7 +61,7 @@ namespace shape {
 
         void explain() const noexcept override {
             std::cout << "Rectangle starting from - top-left coordinate - (" << top_left_.x << "," << top_left_.x <<
-                    ") width of " << w_ << " and width of " << h_ << "\n";
+                    ") width " << w_ << " and height " << h_ << "\n";
         }
 
     private:
