@@ -19,36 +19,36 @@ using namespace controller;
 using namespace serializer;
 
 // Handler: File → New
-void on_new_document(const EditorController &ctl) {
+void new_document(const EditorController &ctl) {
     ctl.new_document();
 }
 
 // Handler: File → Import...
-void on_import(const EditorController &ctl, const std::string &path) {
+void import_file(const EditorController &ctl, const std::string &path) {
     if (!ctl.import_document(path)) {
         std::cerr << "Import failed for: " << path << "\n";
     }
 }
 
 // Handler: File → Export...
-void on_export(const EditorController &ctl, const std::string &path) {
+void export_file(const EditorController &ctl, const std::string &path) {
     if (!ctl.export_document(path)) {
         std::cerr << "Export failed for: " << path << "\n";
     }
 }
 
 // Handler: Insert → Shape
-ShapeId on_create_shape(const EditorController &ctl, const std::string &type) {
+ShapeId create_shape(const EditorController &ctl, const std::string &type) {
     try {
         return ctl.create_primitive(type);
     } catch (const std::exception &e) {
         std::cerr << "Create shape failed: " << e.what() << "\n";
-        return ShapeId{0};
+        return ShapeId{};
     }
 }
 
 // Handler: Edit → Delete
-void on_delete_shape(const EditorController &ctl, const ShapeId id) {
+void delete_shape(const EditorController &ctl, const ShapeId id) {
     if (!ctl.delete_primitive(id)) {
         std::cerr << "Delete shape failed: id=" << id.value << "\n";
     }
@@ -84,32 +84,29 @@ int main() {
     // ---- Simulated GUI Session (Handlers are the "GUI callbacks") ----
 
     // File → New
-    on_new_document(controller);
+    new_document(controller);
 
     // Insert → Rectangle
-    auto rId = on_create_shape(controller, "Rectangle");
+    create_shape(controller, "Rectangle");
 
     // Insert → Circle
-    auto cId = on_create_shape(controller, "Circle");
-
-    // Insert → Circle
-    auto lId = on_create_shape(controller, "Line");
+    create_shape(controller, "Circle");
 
     // File → Export...
-    on_export(controller, "scene.mock");
+    export_file(controller, "scene.mock");
 
     // File → New → (clear) then File → Import...
-    on_new_document(controller);
-    on_import(controller, "scene.mock");
+    new_document(controller);
+    import_file(controller, "scene.mock");
 
     // Insert → Line
-    // auto lId = on_create_shape(controller, "Line");
+    const auto lId = create_shape(controller, "Line");
 
     // Edit → Delete (remove the circle we created earlier, if any)
-    if (cId.value != 0) on_delete_shape(controller, cId);
+    if (lId.value != 0) delete_shape(controller, lId);
 
     // Final export to show resulting state
-    on_export(controller, "scene_final.mock");
+    export_file(controller, "scene_final.mock");
 
     // Program ends; destructors release resources via smart pointers.
     return 0;

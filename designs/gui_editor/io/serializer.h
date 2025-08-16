@@ -29,7 +29,7 @@ namespace serializer {
         bool export_to_file(const Document &doc, const std::string &path) override {
             // Mock: Just report to stdout to indicate the call succeeded.
             std::cout << "[DummySerializer] Exported document to " << path
-                    << " (shapes: " << doc.list().size() << ")\n";
+                    << " (shapes: " << doc.parse_into_map().size() << ")\n";
             return true;
         }
 

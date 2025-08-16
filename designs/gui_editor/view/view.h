@@ -19,9 +19,10 @@ namespace view {
     class ConsoleView final : public IView {
     public:
         void refresh(const Document &doc) override {
-            std::cout << "[View] Document has " << doc.list().size() << " shapes:\n";
-            for (const auto &s: doc.list()) {
-                s->explain();
+            const auto doc_map = doc.parse_into_map();
+            std::cout << "[View] Document has " << doc_map.size() << " shapes:\n";
+            for (const auto &[shape_id, shape]: doc.parse_into_map()) {
+                shape->explain();
             }
         }
     };

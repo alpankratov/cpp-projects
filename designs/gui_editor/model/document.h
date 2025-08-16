@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
+
 #include "shape.h"
 #include "shape_id.h"
 
@@ -38,11 +40,11 @@ namespace document {
             return std::nullopt;
         }
 
-        [[nodiscard]] std::vector<ShapePtr> list() const {
-            std::vector<ShapePtr> out;
+        [[nodiscard]] std::unordered_map<int, ShapePtr> parse_into_map() const {
+            std::unordered_map<int, ShapePtr> out;
             out.reserve(shapes_.size());
             for (const auto &[shape_id, shape]: shapes_) {
-                out.push_back(shape);
+                out.emplace(shape_id.value, shape);
             };
             return out;
         }
