@@ -22,6 +22,7 @@ namespace view {
             const auto doc_map = doc.parse_into_map();
             std::cout << "[View] Refreshing view... Document now has " << doc_map.size() << " shapes:\n";
             for (const auto &[shape_id, shape]: doc.parse_into_map()) {
+                std::cout << "Shape id " << shape_id << ": ";
                 shape->explain();
             }
         }
