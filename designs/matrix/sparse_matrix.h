@@ -41,7 +41,7 @@ namespace sparse_matrix {
             // value_type, reference, pointer, difference_type, iterator_category
             using value_type = Entry;
             using reference = const Entry;
-            using pointer = const Entry *; // not used only for future reference
+            using pointer = const Entry *;  // not used only for future reference
             using difference_type = std::ptrdiff_t;
             using iterator_category = std::forward_iterator_tag; // need to move only forward through the matrix
             // Note regarding the reference: sparse matrix doesn't actually store `Entry` objects anywhere in memory.
