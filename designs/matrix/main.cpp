@@ -23,5 +23,15 @@ int main() {
         }
         std::cout << '\n';
     }
+
+    // printing number of occupied cells
+    std::cout << "\nOccupied cells: " << matrix.count_values() << "\n";
+    //
+    // listing all occupied cells
+    std::cout << "List (row column value):\n";
+    for (auto [x, y, value]: matrix) {
+        std::cout << x << ' ' << y << ' ' << value << '\n';
+    }
+
     return 0;
 }
