@@ -1,7 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 namespace sparse_matrix {
     class SparseMatrix {
@@ -21,8 +21,8 @@ namespace sparse_matrix {
 
         class iterator {
             // iterating over cells (inner iterator) and rows (outer iterator)
-            using OuterIt = std::unordered_map<std::size_t, std::unordered_map<std::size_t, int> >::const_iterator;
-            using InnerIt = std::unordered_map<std::size_t, int>::const_iterator;
+            using OuterIt = std::map<std::size_t, std::map<std::size_t, int> >::const_iterator;
+            using InnerIt = std::map<std::size_t, int>::const_iterator;
 
             const SparseMatrix *parent_ = nullptr;
             OuterIt             outer_;
@@ -136,7 +136,7 @@ namespace sparse_matrix {
         int default_ = 0;
         // so matrix is a hashed map of row of a hashed map of columns containing values
         // i.e. {4: {2: 1}} -> value 1 is located in 4th row and 2nd column.
-        std::unordered_map<std::size_t, std::unordered_map<std::size_t, int> > data_;
+        std::map<std::size_t, std::map<std::size_t, int> > data_;
 
         int get(const std::size_t row, const std::size_t col) const {
             auto it_row = data_.find(row); // check if a row is non-empty (so data_ has vales)
