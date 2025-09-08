@@ -16,7 +16,7 @@ namespace sparse_matrix {
         struct Entry {
             std::size_t x;
             std::size_t y;
-            int value;
+            int         value;
         };
 
         class iterator {
@@ -25,11 +25,12 @@ namespace sparse_matrix {
             using InnerIt = std::unordered_map<std::size_t, int>::const_iterator;
 
             const SparseMatrix *parent_ = nullptr;
-            OuterIt outer_;
-            InnerIt inner_;
+            OuterIt             outer_;
+            InnerIt             inner_;
 
             void advance_to_next_valid() {
-                while (outer_ != parent_->data_.end() && inner_ == outer_->second.end()) {
+                // Skip empty rows to ensure we point to actual data
+                while (outer_ != parent_->data_.end() && (outer_->second.empty() || inner_ == outer_->second.end())) {
                     ++outer_;
                     if (outer_ != parent_->data_.end()) inner_ = outer_->second.begin();
                 }
@@ -41,7 +42,7 @@ namespace sparse_matrix {
             // value_type, reference, pointer, difference_type, iterator_category
             using value_type = Entry;
             using reference = const Entry;
-            using pointer = const Entry *;  // not used only for future reference
+            using pointer = const Entry *; // not used only for future reference
             using difference_type = std::ptrdiff_t;
             using iterator_category = std::forward_iterator_tag; // need to move only forward through the matrix
             // Note regarding the reference: sparse matrix doesn't actually store `Entry` objects anywhere in memory.
@@ -53,7 +54,8 @@ namespace sparse_matrix {
             iterator() = default;
 
             iterator(const SparseMatrix *p, const OuterIt o, const InnerIt i)
-                : parent_(p), outer_(o), inner_(i) { advance_to_next_valid(); }
+                : parent_(p), outer_(o), inner_(i) {
+            }
 
             // 3. Dereference: operator*() (and optionally operator->()) -> Gives access to the element.
             reference operator*() const {
@@ -66,8 +68,7 @@ namespace sparse_matrix {
                 ++inner_;
                 if (inner_ == outer_->second.end()) {
                     ++outer_;
-                    if (outer_ != parent_->data_.end())
-                        inner_ = outer_->second.begin();
+                    if (outer_ != parent_->data_.end()) inner_ = outer_->second.begin();
                 }
                 advance_to_next_valid();
                 return *this;
@@ -82,12 +83,8 @@ namespace sparse_matrix {
         };
 
         iterator begin() const noexcept {
-            return iterator{
-                this, data_.begin(),
-                data_.empty()
-                    ? std::unordered_map<std::size_t, int>::const_iterator()
-                    : data_.begin()->second.begin()
-            };
+            if (data_.empty()) return end();
+            return iterator{this, data_.begin(), data_.begin()->second.begin()};
         }
 
         iterator end() const noexcept { return iterator{this, data_.end(), {}}; }
@@ -99,7 +96,7 @@ namespace sparse_matrix {
 
         class Row {
             SparseMatrix &parent_;
-            std::size_t row_;
+            std::size_t   row_;
 
         public:
             Row(SparseMatrix &p, const std::size_t r) : parent_(p), row_(r) {
@@ -107,7 +104,7 @@ namespace sparse_matrix {
 
             class Cell {
                 SparseMatrix &parent_;
-                std::size_t row_, col_;
+                std::size_t   row_, col_;
 
             public:
                 Cell(SparseMatrix &p, const std::size_t r, const std::size_t c)
@@ -145,8 +142,7 @@ namespace sparse_matrix {
             auto it_row = data_.find(row); // check if a row is non-empty (so data_ has vales)
             if (it_row != data_.end()) {
                 auto it_col = it_row->second.find(col); // check if a column is non-empty (so data_ has vales)
-                if (it_col != it_row->second.end())
-                    return it_col->second; // extracting value
+                if (it_col != it_row->second.end()) return it_col->second; // extracting value
             }
             return default_; // if nothing is identified -> then return default value (as it is a sparse matrix)
         }
@@ -161,8 +157,7 @@ namespace sparse_matrix {
                 auto it_row = data_.find(row);
                 if (it_row != data_.end()) {
                     it_row->second.erase(col);
-                    if (it_row->second.empty())
-                        data_.erase(it_row);
+                    if (it_row->second.empty()) data_.erase(it_row);
                 }
             }
         }
