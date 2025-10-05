@@ -16,7 +16,7 @@ cmake --build ./cmake-build-debug --target bayan
 ```
 
 The resulting executable will be here:
-- <PROJECT_DIR>/designs/file_deduplicator/cmake-build-debug/bayan
+- <PROJECT_DIR>/cmake-build-debug/bayan
 
 You can also see a convenience copy at the project root (if present), but the canonical path is the one above.
 
