@@ -69,9 +69,9 @@ void DuplicateFinder::collect_candidates() {
             const bfs::directory_entry &ent = *it;
             const bfs::path &p = ent.path();
 
-            // Respect depth limit
-            if (cfg_.depth >= 0 &&
-                std::distance(root.begin(), p.begin()) - std::distance(root.begin(), root.begin()) > cfg_.depth) {
+            // Respect depth limit using iterator depth
+            auto it_depth = it.depth();
+            if (cfg_.depth >= 0 && it_depth >= cfg_.depth) {
                 it.disable_recursion_pending(); // stop descending further
             }
 
