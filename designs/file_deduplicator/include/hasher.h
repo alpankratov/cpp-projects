@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "config.h"
 
 namespace bayan {
 

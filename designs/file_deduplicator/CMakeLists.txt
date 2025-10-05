@@ -25,6 +25,7 @@ add_library(bayan_lib
         src/config.cpp
         src/block_reader.cpp
         src/duplicate_finder.cpp
+        src/hasher_factory.cpp
 )
 
 target_include_directories(bayan_lib PUBLIC
