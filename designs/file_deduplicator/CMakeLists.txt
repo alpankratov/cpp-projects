@@ -11,9 +11,9 @@ find_package(Boost 1.71 REQUIRED COMPONENTS
         program_options
         regex)
 
-if(NOT Boost_FOUND)
+if (NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found")
-endif()
+endif ()
 
 message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost libraries: ${Boost_LIBRARIES}")

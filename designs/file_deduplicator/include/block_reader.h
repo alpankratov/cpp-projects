@@ -4,16 +4,14 @@
 #include <vector>
 
 namespace bayan {
-
     /**
      * Reads a file block‑wise, guaranteeing:
      *   • each block is read at most once,
      *   • the last block is zero‑padded to the configured size.
      */
-    class BlockReader
-    {
+    class BlockReader {
     public:
-        explicit BlockReader(const boost::filesystem::path& p, std::size_t block_sz);
+        explicit BlockReader(const boost::filesystem::path &p, std::size_t block_sz);
 
         /** Returns true if there is another block to read. */
         bool has_next() const { return !eof_; }
@@ -26,5 +24,4 @@ namespace bayan {
         std::size_t block_size_;
         bool eof_ = false;
     };
-
 }

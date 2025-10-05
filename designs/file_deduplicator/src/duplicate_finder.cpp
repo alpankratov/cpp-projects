@@ -2,11 +2,12 @@
 #include <boost/regex.hpp>
 #include <iostream>
 #include <queue>
+#include <utility>
 
 namespace bfs = boost::filesystem;
 using namespace bayan;
 
-std::string escape_regex_chars(char c) {
+std::string escape_regex_chars(const char c) {
     static const std::string special_chars = ".^$+{}[]()|\\ ";
     if (special_chars.find(c) != std::string::npos) {
         return std::string("\\") + c;
@@ -14,7 +15,7 @@ std::string escape_regex_chars(char c) {
     return std::string(1, c);
 }
 
-DuplicateFinder::DuplicateFinder(const Config &cfg) : cfg_(cfg) {
+DuplicateFinder::DuplicateFinder(Config cfg) : cfg_(std::move(cfg)) {
 }
 
 std::vector<std::vector<bfs::path> >
@@ -41,7 +42,7 @@ void DuplicateFinder::collect_candidates() {
 
     // Helper to decide whether a path lies under any excluded dir
     auto is_excluded = [&](const bfs::path &p) -> bool {
-        bfs::path cur = bfs::canonical(p);
+        const bfs::path cur = bfs::canonical(p);
         for (auto &ex: excl_abs)
             if (std::mismatch(ex.begin(), ex.end(), cur.begin()).first == ex.end())
                 return true;
@@ -52,7 +53,7 @@ void DuplicateFinder::collect_candidates() {
     std::vector<boost::regex> mask_regexes;
     for (auto &m: cfg_.masks) {
         std::string r;
-        for (char c: m) {
+        for (const char c: m) {
             if (c == '*') r += ".*";
             else if (c == '?') r += ".";
             else r += escape_regex_chars(c);
@@ -116,7 +117,7 @@ void DuplicateFinder::collect_candidates() {
 }
 
 /* --------------------------------------------------------------------- */
-/* 2️⃣  Quick mask helper                                                */
+/* Quick mask helper                                                */
 bool DuplicateFinder::matches_mask(const std::string &filename) const {
     if (cfg_.masks.empty()) return true;
     for (auto &pat: cfg_.masks) {
@@ -128,10 +129,10 @@ bool DuplicateFinder::matches_mask(const std::string &filename) const {
 }
 
 /* --------------------------------------------------------------------- */
-/* 3️⃣  Process a single size‑group using the lazy block‑wise algorithm */
+/* Process a single size‑group using the lazy block‑wise algorithm       */
 void DuplicateFinder::process_size_group(
     const std::vector<bfs::path> &files,
-    std::vector<std::vector<bfs::path> > &out_groups) {
+    std::vector<std::vector<bfs::path> > &out_groups) const {
     /* -------------------------------------------------------------
        Conceptual overview
        -------------------
@@ -165,8 +166,8 @@ void DuplicateFinder::process_size_group(
             if (bucket.size() < 2) continue; // nothing to compare here
 
             // -----------------------------------------------------------------
-            // 1️⃣  Open a BlockReader for every file in the bucket.
-            //    We advance each reader to the *current* block_index.
+            // STEP 1. Open a BlockReader for every file in the bucket.
+            // We advance each reader to the *current* block_index.
             // -----------------------------------------------------------------
             std::unordered_map<std::string, Bucket> hash_map; // hash → files
 
@@ -191,20 +192,20 @@ void DuplicateFinder::process_size_group(
                     blk.assign(cfg_.block_size, 0); // zero‑filled block
 
                 // -------------------------------------------------------------
-                // 2️⃣  Compute the hash of the block.
+                // STEP 2. Compute the hash of the block.
                 // -------------------------------------------------------------
                 auto hasher = make_hasher_instance();
                 hasher->update(blk.data(), blk.size());
                 std::string dig = hasher->digest();
 
                 // -------------------------------------------------------------
-                // 3️⃣  Put the file into the bucket identified by that hash.
+                // STEP 3. Put the file into the bucket identified by that hash.
                 // -------------------------------------------------------------
                 hash_map[dig].push_back(p);
             }
 
             // -------------------------------------------------------------
-            // 4️⃣  Re‑bucket: every hash that still has ≥2 files survives.
+            // STEP 4. Re‑bucket: every hash that still has ≥2 files survives.
             // -------------------------------------------------------------
             for (auto &kv: hash_map) {
                 if (kv.second.size() >= 2) {
@@ -216,9 +217,8 @@ void DuplicateFinder::process_size_group(
         }
 
         // -------------------------------------------------------------
-        // 5️⃣  Anything that survived *without* needing another block
-        //     (i.e. we reached the end of the file for all members)
-        //     forms a final duplicate group.
+        // STEP 5. Anything that survived *without* needing another block
+        // (i.e. we reached the end of the file for all members) forms a final duplicate group.
         // -------------------------------------------------------------
         for (auto &bucket: next_round) {
             // All files in a bucket have the same size.
@@ -227,7 +227,7 @@ void DuplicateFinder::process_size_group(
             bool reached_eof = false;
             for (const bfs::path &p: bucket) {
                 std::uintmax_t fsize = bfs::file_size(p);
-                std::uintmax_t blocks_needed =
+                const std::uintmax_t blocks_needed =
                         (fsize + cfg_.block_size - 1) / cfg_.block_size; // ceil
                 if (block_index + 1 >= blocks_needed) // next block would be past EOF
                 {

@@ -5,26 +5,22 @@
 #include <sstream>
 
 namespace bayan {
-
-    class MD5Hasher : public Hasher
-    {
+    class MD5Hasher final : public Hasher {
     public:
         MD5Hasher() { reset(); }
 
-        void update(const void* data, std::size_t size) override
-        {
+        void update(const void *data, const std::size_t size) override {
             ctx.process_bytes(data, size);
         }
 
-        std::string digest() const override
-        {
+        [[nodiscard]] std::string digest() const override {
             // Compute digest from a copy of the current context so that
             // calling digest() does not mutate the hasher state.
             auto tmp = ctx; // copy current state
             boost::uuids::detail::md5::digest_type d;
             tmp.get_digest(d);
 
-            const unsigned char* bytes = reinterpret_cast<const unsigned char*>(&d);
+            const auto bytes = reinterpret_cast<const unsigned char *>(&d);
             std::ostringstream oss;
             oss << std::hex << std::setfill('0');
             for (int i = 0; i < 16; ++i)
@@ -32,13 +28,11 @@ namespace bayan {
             return oss.str();
         }
 
-        void reset() override
-        {
+        void reset() override {
             ctx = boost::uuids::detail::md5();
         }
 
     private:
         boost::uuids::detail::md5 ctx;
     };
-
 }
