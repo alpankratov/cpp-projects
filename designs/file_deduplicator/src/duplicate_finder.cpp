@@ -1,19 +1,12 @@
 #include "../include/duplicate_finder.h"
 #include <boost/regex.hpp>
+#include <fnmatch.h>
 #include <iostream>
 #include <queue>
 #include <utility>
 
 namespace bfs = boost::filesystem;
 using namespace bayan;
-
-std::string escape_regex_chars(const char c) {
-    static const std::string special_chars = ".^$+{}[]()|\\ ";
-    if (special_chars.find(c) != std::string::npos) {
-        return std::string("\\") + c;
-    }
-    return std::string(1, c);
-}
 
 DuplicateFinder::DuplicateFinder(Config cfg) : cfg_(std::move(cfg)) {
 }
@@ -49,17 +42,8 @@ void DuplicateFinder::collect_candidates() {
         return false;
     };
 
-    // Convert glob masks to case‑insensitive regexes (if any)
-    std::vector<boost::regex> mask_regexes;
-    for (auto &m: cfg_.masks) {
-        std::string r;
-        for (const char c: m) {
-            if (c == '*') r += ".*";
-            else if (c == '?') r += ".";
-            else r += escape_regex_chars(c);
-        }
-        mask_regexes.emplace_back(r, boost::regex::icase);
-    }
+    // Prepare glob masks for matching using POSIX fnmatch (case-insensitive)
+    const std::vector<std::string> masks = cfg_.masks;
 
     // Recursive walk for each scan directory
     for (auto &root: cfg_.scan_dirs) {
@@ -92,14 +76,16 @@ void DuplicateFinder::collect_candidates() {
                 }
 
                 // Mask check (if masks were supplied)
-                if (!mask_regexes.empty()) {
+                if (!masks.empty()) {
                     bool ok = false;
                     const std::string fname = p.filename().string();
-                    for (auto &rgx: mask_regexes)
-                        if (boost::regex_match(fname, rgx)) {
+                    for (const auto &pat: masks) {
+                        // Use POSIX fnmatch with case-insensitive flag for robustness
+                        if (fnmatch(pat.c_str(), fname.c_str(), FNM_CASEFOLD) == 0) {
                             ok = true;
                             break;
                         }
+                    }
                     if (!ok) {
                         ++it;
                         continue;

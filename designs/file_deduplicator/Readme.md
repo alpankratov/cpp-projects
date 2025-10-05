@@ -12,13 +12,11 @@ Output format:
 This project is already wired in the parent CMake workspace. Use the existing CLion profile and target:
 
 ```
-cmake --build <PROJECT_DIR>/designs/file_deduplicator/cmake-build-debug --target bayan
+cmake --build ./cmake-build-debug --target bayan
 ```
 
 The resulting executable will be here:
 - <PROJECT_DIR>/designs/file_deduplicator/cmake-build-debug/bayan
-
-For convenience, built bayan executable is already located in `<PROJECT_DIR>/designs/file_deduplicator/bayan`.
 
 You can also see a convenience copy at the project root (if present), but the canonical path is the one above.
 
@@ -43,8 +41,8 @@ Notes:
 ## Demo data and example commands
 
 The repository contains demo files to quickly try the tool:
-- Directory: /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/demo
-- Excluded sample subdir: /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/demo/exclude
+- Directory: designs/file_deduplicator/demo
+- Excluded sample subdir: designs/file_deduplicator/demo/exclude
 
 Files summary:
 - small_duplicate_1.txt, small_duplicate_2.txt — duplicates (12 bytes)
@@ -53,45 +51,43 @@ Files summary:
 - small_no_duplicates.txt, large_no_duplicates.txt — unique
 - exclude/secret_duplicate_1.txt, exclude/secret_duplicate_2.txt — duplicates inside the exclude folder
 
-Below, replace <BUILD_DIR> with:
-- /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/cmake-build-debug
-
 1) Basic scan of demo (find all duplicates; unlimited depth):
 ```
-<BUILD_DIR>/bayan --scan-dir /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/demo
+./cmake-build-debug/bayan --scan-dir designs/file_deduplicator/demo
 ```
 
 2) Exclude the "exclude" folder inside demo:
 ```
-<BUILD_DIR>/bayan \
+./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
   --exclude-dir designs/file_deduplicator/demo/exclude
 ```
 
 3) Limit depth to not descend into subdirectories (depth 0):
 ```
-<BUILD_DIR>/bayan \
+./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
   --depth 0
 ```
+See how files in the "exclude" folder are not scanned even though they are not excluded by `--exclude-dir ` parameter.
 
-4) Only check specific filename masks (TXT and CSV), case-insensitive:
+4) Only check specific filename masks (only CSV), case-insensitive:
 ```
-<BUILD_DIR>/bayan \
+./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
-  --mask *.txt *.csv
+  --mask *.CSV
 ```
 
 5) Ignore tiny files (e.g., smaller than 100 bytes):
 ```
-<BUILD_DIR>/bayan \
+./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
   --min-size 100
 ```
 
 6) Use MD5 as the hashing algorithm with a larger block size (e.g., 16 KiB):
 ```
-<BUILD_DIR>/bayan \
+./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
   --hash md5 \
   --block-size 16384
@@ -99,9 +95,9 @@ Below, replace <BUILD_DIR> with:
 
 7) Combine multiple options:
 ```
-<BUILD_DIR>/bayan \
-  --scan-dir /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/demo \
-  --exclude-dir /media/alex/Storage/CLionProjects/cpp-projects/designs/file_deduplicator/demo/exclude \
+./cmake-build-debug/bayan \
+  --scan-dir designs/file_deduplicator/demo \
+  --exclude-dir designs/file_deduplicator/demo/exclude \
   --mask *.txt \
   --min-size 10 \
   --hash crc32

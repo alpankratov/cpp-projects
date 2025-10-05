@@ -46,6 +46,10 @@ target_link_libraries(bayan_lib
 # --------------------------------------------------------------
 add_executable(bayan src/main.cpp)
 target_link_libraries(bayan PRIVATE bayan_lib)
+# Emit the bayan executable into the root build directory
+set_target_properties(bayan PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
 
 # --------------------------------------------------------------
 # Install rules (so the binary can be published on Bintray)
