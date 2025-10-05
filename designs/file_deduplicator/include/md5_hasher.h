@@ -13,39 +13,32 @@ namespace bayan {
 
         void update(const void* data, std::size_t size) override
         {
-            md5_process(data, size);
+            ctx.process_bytes(data, size);
         }
 
         std::string digest() const override
         {
+            // Compute digest from a copy of the current context so that
+            // calling digest() does not mutate the hasher state.
+            auto tmp = ctx; // copy current state
+            boost::uuids::detail::md5::digest_type d;
+            tmp.get_digest(d);
+
+            const unsigned char* bytes = reinterpret_cast<const unsigned char*>(&d);
             std::ostringstream oss;
-            const auto& d = result;
+            oss << std::hex << std::setfill('0');
             for (int i = 0; i < 16; ++i)
-                oss << std::hex << std::setw(2) << std::setfill('0')
-                    << static_cast<int>(static_cast<unsigned char>(d[i]));
+                oss << std::setw(2) << static_cast<unsigned int>(bytes[i]);
             return oss.str();
         }
 
         void reset() override
         {
             ctx = boost::uuids::detail::md5();
-            result.clear();
         }
 
     private:
-        void md5_process(const void* data, std::size_t size)
-        {
-            ctx.process_bytes(data, size);
-            if (size == 0)   // finalisation request
-            {
-                boost::uuids::detail::md5::digest_type d;
-                ctx.get_digest(d);
-                result.assign(reinterpret_cast<const char*>(d), 16);
-            }
-        }
-
         boost::uuids::detail::md5 ctx;
-        std::string result;          // 16‑byte binary digest
     };
 
 }
