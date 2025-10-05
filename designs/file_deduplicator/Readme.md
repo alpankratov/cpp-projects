@@ -27,7 +27,7 @@ You can also see a convenience copy at the project root (if present), but the ca
 --exclude-dir <dir...>  One or more directories to exclude (optional)
 --depth <n>             Recursion depth (0 = only the directory itself; -1 = unlimited)
 --min-size <bytes>      Minimal file size to consider, in bytes (default: 2)
---mask <glob...>        Case-insensitive glob masks for filenames, e.g. *.txt *.csv (optional)
+--mask <glob...>        Case-insensitive glob masks for filenames, e.g. "*.txt" "*.csv" (optional)
 --block-size <bytes>    Size of a block in bytes for hashing (default: 4096)
 --hash <algo>           Hash algorithm: crc32 (default) or md5
 -h, --help              Show help and exit
@@ -75,7 +75,7 @@ See how files in the "exclude" folder are not scanned even though they are not e
 ```
 ./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
-  --mask *.CSV
+  --mask "*.CSV"
 ```
 
 5) Ignore tiny files (e.g., smaller than 100 bytes):
@@ -98,7 +98,7 @@ See how files in the "exclude" folder are not scanned even though they are not e
 ./cmake-build-debug/bayan \
   --scan-dir designs/file_deduplicator/demo \
   --exclude-dir designs/file_deduplicator/demo/exclude \
-  --mask *.txt \
+  --mask "*.txt" \
   --min-size 10 \
   --hash crc32
 ```
