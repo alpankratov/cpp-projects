@@ -1,0 +1,42 @@
+#include "../include/config.h"
+#include "../include/duplicate_finder.h"
+#include <iostream>
+
+int main(int argc, char* argv[])
+{
+    try
+    {
+        // -----------------------------------------------------------------
+        // 1️⃣  Parse command‑line arguments
+        // -----------------------------------------------------------------
+        bayan::Config cfg = bayan::parse_config(argc, argv);
+
+        // -----------------------------------------------------------------
+        // 2️⃣  Run the duplicate‑finder engine
+        // -----------------------------------------------------------------
+        bayan::DuplicateFinder finder(cfg);
+        auto groups = finder.run();
+
+        // -----------------------------------------------------------------
+        // 3️⃣  Emit results exactly as required:
+        //     * one absolute path per line
+        //     * blank line between groups
+        // -----------------------------------------------------------------
+        for (std::size_t i = 0; i < groups.size(); ++i)
+        {
+            const auto& g = groups[i];
+            for (const auto& p : g)
+                std::cout << p.string() << '\n';
+            if (i + 1 < groups.size())
+                std::cout << '\n';          // separator between groups
+        }
+
+        // If no duplicates were found we simply output nothing (as per spec).
+        return 0;
+    }
+    catch (const std::exception& ex)
+    {
+        std::cerr << "Error: " << ex.what() << '\n';
+        return 1;
+    }
+}
