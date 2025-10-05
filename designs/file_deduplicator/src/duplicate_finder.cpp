@@ -207,9 +207,9 @@ void DuplicateFinder::process_size_group(
             // -------------------------------------------------------------
             // STEP 4. Re‑bucket: every hash that still has ≥2 files survives.
             // -------------------------------------------------------------
-            for (auto &kv: hash_map) {
-                if (kv.second.size() >= 2) {
-                    next_round.push_back(std::move(kv.second));
+            for (auto &[hash_value, file_path]: hash_map) {
+                if (file_path.size() >= 2) {
+                    next_round.push_back(std::move(file_path));
                     any_bucket_active = true; // we have work for the next block
                 }
                 // Singletons are dropped – they cannot be duplicates.
