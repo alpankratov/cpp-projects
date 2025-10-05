@@ -20,6 +20,8 @@ add_library(cpp_projects_lib lib.cpp)
 #add_executable(custom_allocator designs/custom_allocator/custom_allocator_source.cpp)
 #add_executable(gui_editor designs/gui_editor/app/sparse_matrix.cpp)
 add_executable(sparse_matrix designs/matrix/sparse_matrix.cpp)
+#add_executable(gui_editor designs/gui_editor/app/main.cpp)
+add_executable(bulk designs/bulk_cmd_parser/main.cpp)
 
 target_include_directories(cpp_projects_lib
         PRIVATE "${CMAKE_BINARY_DIR}"
