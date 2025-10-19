@@ -6,8 +6,8 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-14")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(bulk main.cpp
-        block_queue.h)
+add_executable(bulk main.cpp)
+add_executable(bulk_async async/main.cpp async/async.cpp)
 
 # Ensure the bulk executable is part of the default build (ALL) so it's built automatically
 # when the project is built after a CMake reload.
