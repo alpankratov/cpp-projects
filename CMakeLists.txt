@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 3.31.6)
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
-set(CMAKE_C_COMPILER "/usr/bin/gcc-14")
-set(CMAKE_CXX_COMPILER "/usr/bin/g++-14")
-
 project(cpp_projects_lib VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" ON)
@@ -25,6 +22,7 @@ add_library(cpp_projects_lib lib.cpp)
 #add_executable(sparse_matrix designs/matrix/sparse_matrix.cpp)
 #add_executable(gui_editor designs/gui_editor/app/main.cpp)
 #add_executable(bulk designs/bulk_cmd_parser/main.cpp)
+#add_subdirectory(designs/file_deduplicator)
 add_subdirectory(designs/bulk_cmd_parser)
 
 target_include_directories(cpp_projects_lib
