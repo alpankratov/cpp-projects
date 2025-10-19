@@ -1,7 +1,8 @@
 #include "bulk.h"
+#include "block_queue.h"
 #include <iostream>
 #include <vector>
-#include <memory>
+#include <thread>
 
 int main(const int argc, char* argv[])
 {
@@ -28,20 +29,36 @@ int main(const int argc, char* argv[])
     ConsoleSink console_sink;
     FileSink    file_sink;
 
+    BlockQueue<Block> file_queue;
+    BlockQueue<Block> console_queue;
+
+    std::thread t_console(console_worker, std::ref(console_queue), &console_sink);
+    std::thread t1_file(file_worker, std::ref(file_queue), &file_sink);
+    std::thread t2_file(file_worker, std::ref(file_queue), &file_sink);
     const std::vector<IBlockSink*> sinks = { &console_sink, &file_sink };
 
     std::string line;
     while (std::getline(std::cin, line)) {
         Block output_block;
         if (builder.feed_line(line, output_block)) {
-            for (auto* s : sinks) s->consume(output_block);
+            console_queue.push(output_block);
+            file_queue.push(output_block);
         }
+
     }
 
     Block final_block;
     if (builder.finish(final_block)) {
-        for (auto* s : sinks) s->consume(final_block);
+        console_queue.push(final_block);
+        file_queue.push(final_block);
     }
+
+    // Stop queue and wait for workers to finish
+    console_queue.stop();
+    t_console.join();
+    file_queue.stop();
+    t1_file.join();
+    t2_file.join();
 
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 // Finished block of commands
 struct Block {
@@ -37,7 +38,7 @@ class FileSink final : public IBlockSink {
 public:
     void consume(const Block &b) override {
         std::ostringstream fn;
-        fn << "bulk" << b.timestamp << ".log";
+        fn << "bulk_" << b.timestamp << "_" << std::this_thread::get_id() << ".log";
 
         std::ofstream out(fn.str(), std::ios::out | std::ios::trunc);
         if (!out) {
