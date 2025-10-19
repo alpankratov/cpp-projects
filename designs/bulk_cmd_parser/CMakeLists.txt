@@ -7,12 +7,10 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(bulk main.cpp)
-add_executable(bulk_async async/main.cpp async/async.cpp)
-
-# Ensure the bulk executable is part of the default build (ALL) so it's built automatically
-# when the project is built after a CMake reload.
-add_custom_target(build_bulk ALL DEPENDS bulk)
+add_executable(libasync.so async/main.cpp async/async.cpp)
 
 set_target_properties(bulk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set_target_properties(libasync.so PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 install(TARGETS bulk RUNTIME DESTINATION bin)
+install(TARGETS libasync.so RUNTIME DESTINATION bin)
