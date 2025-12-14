@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <thread>
+#include <atomic>
 
 // Finished block of commands
 struct Block {
@@ -36,8 +38,9 @@ public:
 class FileSink final : public IBlockSink {
 public:
     void consume(const Block &b) override {
+        static std::atomic<unsigned long long> s_seq{0};
         std::ostringstream fn;
-        fn << "bulk" << b.timestamp << ".log";
+        fn << "bulk_" << b.timestamp << "_" << std::this_thread::get_id() << "_" << s_seq.fetch_add(1, std::memory_order_relaxed) << ".log";
 
         std::ofstream out(fn.str(), std::ios::out | std::ios::trunc);
         if (!out) {

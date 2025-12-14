@@ -22,9 +22,8 @@ add_library(cpp_projects_lib lib.cpp)
 #add_executable(sparse_matrix designs/matrix/sparse_matrix.cpp)
 #add_executable(gui_editor designs/gui_editor/app/main.cpp)
 #add_executable(bulk designs/bulk_cmd_parser/main.cpp)
-
-# Link in the file_deduplicator (bayan) subproject so its targets build at the root level
-add_subdirectory(designs/file_deduplicator)
+#add_subdirectory(designs/file_deduplicator)
+add_subdirectory(designs/bulk_cmd_parser)
 
 target_include_directories(cpp_projects_lib
         PRIVATE "${CMAKE_BINARY_DIR}"
