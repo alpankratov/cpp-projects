@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <chrono>
 
 #include "../bulk.h"
 
@@ -33,8 +34,8 @@ namespace
     class GlobalStaticAggregator
     {
     public:
-        explicit GlobalStaticAggregator(std::size_t bulk_size, Dispatcher& dispatcher)
-            : bulk_size_(bulk_size), dispatcher_(dispatcher)
+        explicit GlobalStaticAggregator(boost::asio::io_context& io, std::size_t bulk_size, Dispatcher& dispatcher)
+            : bulk_size_(bulk_size), dispatcher_(dispatcher), timer_(io)
         {
         }
 
@@ -47,6 +48,12 @@ namespace
             {
                 dispatcher_.dispatch(current_);
                 current_ = Block{}; // reset
+                cancel_timer_no_lock();
+            }
+            else
+            {
+                // restart inactivity timer for partial bulk
+                restart_timer_no_lock();
             }
         }
 
@@ -58,13 +65,20 @@ namespace
             {
                 dispatcher_.dispatch(current_);
                 current_ = Block{};
+                cancel_timer_no_lock();
             }
         }
 
         // Optional, for controlled shutdowns
         void flush_on_shutdown()
         {
-            flush_if_pending();
+            std::lock_guard<std::mutex> lk(mtx_);
+            if (!current_.commands.empty())
+            {
+                dispatcher_.dispatch(current_);
+                current_ = Block{};
+            }
+            cancel_timer_no_lock();
         }
 
     private:
@@ -72,6 +86,32 @@ namespace
         Dispatcher& dispatcher_;
         std::mutex mtx_;
         Block current_{};
+        boost::asio::steady_timer timer_;
+
+        void restart_timer_no_lock()
+        {
+            using namespace std::chrono_literals;
+            // set to 5 seconds from now
+            timer_.expires_after(5s);
+            // capture this by raw pointer is safe as aggregator lives for server lifetime
+            timer_.async_wait([this](const boost::system::error_code& ec)
+            {
+                if (ec) return; // cancelled or error
+                std::lock_guard<std::mutex> lk(mtx_);
+                if (!current_.commands.empty())
+                {
+                    dispatcher_.dispatch(current_);
+                    current_ = Block{};
+                }
+                // nothing else; timer stays idle until next partial batch
+            });
+        }
+
+        void cancel_timer_no_lock()
+        {
+            boost::system::error_code ignored;
+            timer_.cancel(ignored);
+        }
     };
 
     class Session : public std::enable_shared_from_this<Session>
@@ -193,7 +233,7 @@ namespace
     public:
         Server(boost::asio::io_context& io, unsigned short port, std::size_t bulk_size)
             : io_(io), acceptor_(io, tcp::endpoint(tcp::v4(), port)),
-              aggregator_(bulk_size, dispatcher_)
+              aggregator_(io, bulk_size, dispatcher_)
         {
             do_accept();
         }
