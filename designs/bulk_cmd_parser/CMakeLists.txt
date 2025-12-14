@@ -5,9 +5,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(bulk main.cpp)
 add_executable(libasync.so async/main.cpp async/async.cpp)
+add_executable(bulk_server async/bulk_server.cpp)
 
 set_target_properties(bulk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set_target_properties(libasync.so PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set_target_properties(bulk_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 install(TARGETS bulk RUNTIME DESTINATION bin)
 install(TARGETS libasync.so RUNTIME DESTINATION bin)
+install(TARGETS bulk_server RUNTIME DESTINATION bin)
